@@ -24,13 +24,17 @@ RUN ln -sf /usr/bin/vim /usr/bin/vi
 RUN sed -i "s/#PermitRootLogin.*/PermitRootLogin no/" /etc/ssh/sshd_config
 RUN sed -i "s#\/bin\/ash#/bin/bash#g" /etc/passwd
 
-RUN echo "Welcome to your sshd workspace !"                                         > /etc/motd && \
-    echo " "                                                                       >> /etc/motd && \
-    echo "available utils: git, vi, micro, tree, curl, rsync, sendemail"           >> /etc/motd && \
-    echo " "                                                                       >> /etc/motd && \
-    echo " ! Use share-pw instead of passwd to store your ssh-password persistent" >> /etc/motd && \
-    echo " ! Only your home directory us saved permanently."                       >> /etc/motd && \
-    echo ""                                                                        >> /etc/motd
+RUN echo "Welcome to your sshd workspace!"                                             > /etc/motd && \
+    echo " "                                                                           >> /etc/motd && \
+    echo "Feel free to work as sudo and install packages with apk add, but keep in mind:"                           >> /etc/motd && \
+    echo "    * only your home directory will be saved permanently"                           >> /etc/motd && \
+    echo "    * care about your UID and GID in your home directory because of the user interface" >> /etc/motd && \
+    echo " "                                                                           >> /etc/motd && \
+    echo "Available utils: git, vim, micro, tree, curl, rsync, sendemail"               >> /etc/motd && \
+    echo " "                                                                           >> /etc/motd && \
+    echo "Remember:"                                                                           >> /etc/motd && \
+    echo "    * use share-pw instead of passwd to store your ssh-password permanently"            >> /etc/motd && \
+    echo ""                                                                                       >> /etc/motd
 
 
 
