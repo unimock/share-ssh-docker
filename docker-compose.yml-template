@@ -1,0 +1,29 @@
+version: '2'
+services:
+  sshd-hugo:
+    ##################################################
+    # BUILD section
+    ##################################################
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+      args:
+        ALPINE_IMAGE: alpine:3.14
+    ##################################################
+    # RUN section
+    ##################################################
+    image: unimock/share-sshd-docker:0.0.0
+    restart: unless-stopped
+    container_name: sshd-hugo
+    hostname: share
+    ports:
+     - "22222:22"
+    environment:
+      - TIMEZONE=Europe/Berlin
+      - USERS="hugo:1000:share:1000"
+    volumes:
+     - ./hugo:/home/hugo
+volumes:  
+  configure:
+    driver: local
+
