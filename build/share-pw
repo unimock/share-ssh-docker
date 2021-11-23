@@ -1,8 +1,0 @@
-#!/bin/bash
-
-sudo -i passwd $USER
-
-HASH=$( sudo -i grep "^${USER}:" /etc/shadow | cut -d: -f2 )
-echo "$HASH" > /home/${USER}/.sshd/shadow
-rm -f /home/${USER}/initial-sshd-password.txt
-

@@ -16,11 +16,12 @@ services:
     restart: unless-stopped
     container_name: sshd-hugo
     hostname: share
+    domainname: mydomain.de
     ports:
-     - "22222:22"
+     - "111:22"
     environment:
       - TIMEZONE=Europe/Berlin
-      - USERS="hugo:1000:share:1000"
+      - USERS="hugo:1000:share:1000:111"
     volumes:
      - ./hugo:/home/hugo
 volumes:  

@@ -15,7 +15,8 @@ for USER in $USERS ; do
   SSHD_UID="$(echo "${USER}"   | cut -d ':' -f 2)"
   SSHD_GROUP="$(echo "${USER}" | cut -d ':' -f 3)"
   SSHD_GID="$(echo "${USER}"   | cut -d ':' -f 4)"
-  echo "user=${SSHD_USER} uid=${SSHD_UID} group=${SSHD_GROUP} gid=${SSHD_GID}"
+  SSHD_PORT="$(echo "${USER}"  | cut -d ':' -f 5)"
+  echo "user=${SSHD_USER} uid=${SSHD_UID} group=${SSHD_GROUP} gid=${SSHD_GID} port=${SSHD_PORT}"
   #
   # store ssh host keys persistent in .sshd directory
   #
@@ -34,17 +35,33 @@ for USER in $USERS ; do
   else
     addgroup -g "${SSHD_GID}" "${SSHD_GROUP}"
   fi
-  adduser -s "/bin/bash" -D -u "${SSHD_UID}" -G "${SSHD_GROUP}" "${SSHD_USER}"
-  echo "${SSHD_USER} ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+  if getent passwd "${SSHD_USER}" &>/dev/null ; then
+    echo "user=${SSHD_USER} already exists!!!"
+  else
+    adduser -s "/bin/bash" -D -u "${SSHD_UID}" -G "${SSHD_GROUP}" "${SSHD_USER}"
+    echo "${SSHD_USER} ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+  fi
   chmod -v 0700 /home/${SSHD_USER}/.sshd
   
   if [ ! -f /home/${SSHD_USER}/.sshd/shadow ] ; then
     PW=$(hexdump -e '"%02x"' -n 8 /dev/urandom)
     echo "${SSHD_USER}:${PW}" | chpasswd &>/dev/null
-    echo "your initial ssh-password: $PW"                        > /home/${SSHD_USER}/initial-sshd-password.txt
-    echo "Please login and change your password with share-pw " >> /home/${SSHD_USER}/initial-sshd-password.txt
     grep "^${SSHD_USER}:" /etc/shadow | cut -d: -f2 > /home/${SSHD_USER}/.sshd/shadow
+    echo "$PW"                          > /home/${SSHD_USER}/.sshd/initial_ssh_password.txt
   fi
+  #
+  # create README.md
+  #
+  FI=/home/${SSHD_USER}/.sshd/README.md
+  cp /desc.md $FI
+  sed -i -e "s|\[SSHD_USER\]|${SSHD_USER}|g"         $FI
+  sed -i -e "s|\[SSHD_HOME\]|/home/${SSHD_USER}|g"   $FI
+  sed -i -e "s|\[SSHD_UID\]|${SSHD_UID}|g"           $FI
+  sed -i -e "s|\[SSHD_GID\]|${SSHD_GID}|g"           $FI
+  sed -i -e "s|\[SSHD_PORT\]|${SSHD_PORT}|g"         $FI
+  sed -i -e "s|\[SSHD_HNAME\]|`hostname`|g"   $FI
+  sed -i -e "s|\[SSHD_DOMAIN\]|`hostname -d`|g"   $FI
+
   chmod 600 /home/${SSHD_USER}/.sshd/shadow
   HASH=$( cat /home/${SSHD_USER}/.sshd/shadow )
   usermod -p "$HASH" ${SSHD_USER}
@@ -58,6 +75,11 @@ for USER in $USERS ; do
   chmod -v 0600 /home/${SSHD_USER}/.ssh/authorized_keys
   chmod -v 0700 /home/${SSHD_USER}/.ssh
   chown -Rv ${SSHD_USER}:${SSHD_GROUP} /home/${SSHD_USER}/.ssh
+  #
+  # prepare gist directory
+  #
+  mkdir -p /home/${SSHD_USER}/gist/browse
+  chown -v ${SSHD_USER}:${SSHD_GROUP} /home/${SSHD_USER}/gist /home/${SSHD_USER}/gist/browse
 done
 
 exec /usr/sbin/sshd -D -e "$@"

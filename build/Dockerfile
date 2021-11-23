@@ -11,32 +11,28 @@ RUN         apk add --upgrade --no-cache \
                     bash-completion \
                     rsync \
                     openssh \
+                    openssl \
+                    gnupg \
                     tree \
                     curl \
                     tzdata \
-                    micro \
                     git \
                     perl \
+                    micro \
                     sudo
+#                    swaks \
 #            rm -rf /var/cache/apk/*
 RUN ln -sf /usr/bin/vim /usr/bin/vi
 
 RUN sed -i "s/#PermitRootLogin.*/PermitRootLogin no/" /etc/ssh/sshd_config
 RUN sed -i "s#\/bin\/ash#/bin/bash#g" /etc/passwd
 
-RUN echo "Welcome to your sshd workspace!"                                             > /etc/motd && \
-    echo " "                                                                           >> /etc/motd && \
-    echo "Feel free to work as sudo and install packages with apk add, but keep in mind:"                           >> /etc/motd && \
-    echo "    * only your home directory will be saved permanently"                           >> /etc/motd && \
-    echo "    * care about your UID and GID in your home directory because of the user interface" >> /etc/motd && \
-    echo " "                                                                           >> /etc/motd && \
-    echo "Available utils: git, vim, micro, tree, curl, rsync, sendemail"               >> /etc/motd && \
-    echo " "                                                                           >> /etc/motd && \
-    echo "Remember:"                                                                           >> /etc/motd && \
-    echo "    * use share-pw instead of passwd to store your ssh-password permanently"            >> /etc/motd && \
-    echo ""                                                                                       >> /etc/motd
+RUN echo "Welcome to your sshd workspace!"                                                     > /etc/motd && \
+    echo " "                                                                                  >> /etc/motd && \
+    echo "Available utils: git, vim, micro, tree, curl, rsync, sendemail, openssl, gnupg, swaks"     >> /etc/motd && \
+    echo " "                                                                                  >> /etc/motd
 
-
+COPY ./desc.md /
 
 RUN wget http://caspian.dotconf.net/menu/Software/SendEmail/sendEmail-v156.zip && \
     unzip sendEmail-v156.zip sendEmail.pl && rm -f sendEmail-v156.zip && \
@@ -45,8 +41,9 @@ RUN wget http://caspian.dotconf.net/menu/Software/SendEmail/sendEmail-v156.zip &
 COPY        entry.sh /
 COPY        conf.d/etc/ /etc/
 RUN         chmod a+x /entry.sh
-COPY        share-pw /usr/local/bin
-RUN chmod a+x /usr/local/bin/*
+RUN         mv /usr/bin/passwd /usr/bin/passwd.orig
+COPY        passwd /usr/bin
+RUN chmod a+x /usr/bin/passwd
 EXPOSE      22
-VOLUME      ["/home"] 755 root:root
+VOLUME      ["/home"]
 ENTRYPOINT  ["/entry.sh"]
