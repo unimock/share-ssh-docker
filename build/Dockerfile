@@ -16,9 +16,11 @@ RUN         apk add --upgrade --no-cache \
                     tree \
                     curl \
                     tzdata \
-                    git \
+                    git tig \
                     perl \
                     micro \
+                    docker docker-compose \
+                    netcat-openbsd \
                     sudo
 #                    swaks \
 #            rm -rf /var/cache/apk/*
@@ -29,7 +31,7 @@ RUN sed -i "s#\/bin\/ash#/bin/bash#g" /etc/passwd
 
 RUN echo "Welcome to your sshd workspace!"                                                     > /etc/motd && \
     echo " "                                                                                  >> /etc/motd && \
-    echo "Available utils: git, vim, micro, tree, curl, rsync, sendemail, openssl, gnupg, swaks"     >> /etc/motd && \
+    echo "Available utils: git, tig, vim, micro, tree, curl, rsync, sendemail, openssl, gnupg, netcat"     >> /etc/motd && \
     echo " "                                                                                  >> /etc/motd
 
 COPY ./desc.md /
@@ -43,7 +45,8 @@ COPY        conf.d/etc/ /etc/
 RUN         chmod a+x /entry.sh
 RUN         mv /usr/bin/passwd /usr/bin/passwd.orig
 COPY        passwd /usr/bin
-RUN chmod a+x /usr/bin/passwd
+RUN         chmod a+x /usr/bin/passwd
+
 EXPOSE      22
 VOLUME      ["/home"]
 ENTRYPOINT  ["/entry.sh"]

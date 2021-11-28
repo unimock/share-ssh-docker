@@ -9,6 +9,10 @@ fi
 
 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
 
+if [ "${DOCKER_HOST}" != "" ] ; then
+  echo "declare -x DOCKER_HOST=${DOCKER_HOST}" > /etc/profile.d/docker.sh
+fi
+
 USERS=$( echo "${USERS//\"}" )
 for USER in $USERS ; do
   SSHD_USER="$(echo "${USER}"  | cut -d ':' -f 1)"
