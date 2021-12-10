@@ -35,6 +35,7 @@ RUN echo "Welcome to your sshd workspace!"                                      
     echo " "                                                                                  >> /etc/motd
 
 COPY ./desc.md /
+COPY ./scli-linux /
 
 RUN wget http://caspian.dotconf.net/menu/Software/SendEmail/sendEmail-v156.zip && \
     unzip sendEmail-v156.zip sendEmail.pl && rm -f sendEmail-v156.zip && \

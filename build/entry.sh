@@ -20,6 +20,7 @@ for USER in $USERS ; do
   SSHD_GROUP="$(echo "${USER}" | cut -d ':' -f 3)"
   SSHD_GID="$(echo "${USER}"   | cut -d ':' -f 4)"
   SSHD_PORT="$(echo "${USER}"  | cut -d ':' -f 5)"
+  SSHD_MAIL="$(echo "${USER}"  | cut -d ':' -f 6)"
   echo "user=${SSHD_USER} uid=${SSHD_UID} group=${SSHD_GROUP} gid=${SSHD_GID} port=${SSHD_PORT}"
   #
   # store ssh host keys persistent in .sshd directory
@@ -47,11 +48,19 @@ for USER in $USERS ; do
   fi
   chmod -v 0700 /home/${SSHD_USER}/.sshd
   
-  if [ ! -f /home/${SSHD_USER}/.sshd/shadow ] ; then
+  FI=/home/${SSHD_USER}/.sshd/shadow
+  if [ ! -f $FI ] ; then
     PW=$(hexdump -e '"%02x"' -n 8 /dev/urandom)
     echo "${SSHD_USER}:${PW}" | chpasswd &>/dev/null
-    grep "^${SSHD_USER}:" /etc/shadow | cut -d: -f2 > /home/${SSHD_USER}/.sshd/shadow
+    grep "^${SSHD_USER}:" /etc/shadow | cut -d: -f2 > $FI
     echo "$PW"                          > /home/${SSHD_USER}/.sshd/initial_ssh_password.txt
+  fi
+  #
+  # write email address in config file
+  # 
+  FI=/home/${SSHD_USER}/.sshd/.config_mail
+  if [ ! -f $FI ] ; then
+    echo ${SSHD_MAIL} > $FI
   fi
   #
   # create README.md
@@ -71,6 +80,8 @@ for USER in $USERS ; do
   usermod -p "$HASH" ${SSHD_USER}
   chown -Rv ${SSHD_USER}:${SSHD_GROUP} /home/${SSHD_USER}/.sshd
   chmod -v 0700 /home/${SSHD_USER}/.sshd
+
+  
   #
   # prepare .ssh directory
   #
@@ -84,6 +95,21 @@ for USER in $USERS ; do
   #
   mkdir -p /home/${SSHD_USER}/gist/browse
   chown -v ${SSHD_USER}:${SSHD_GROUP} /home/${SSHD_USER}/gist /home/${SSHD_USER}/gist/browse
+  #
+  # prepare client script
+  #
+  FI=/home/${SSHD_USER}/scli-linux
+  cp /scli-linux $FI
+  sed -i -e "s|\[SSHD_USER\]|${SSHD_USER}|g"         $FI
+  sed -i -e "s|\[SSHD_HOME\]|/home/${SSHD_USER}|g"   $FI
+  sed -i -e "s|\[SSHD_UID\]|${SSHD_UID}|g"           $FI
+  sed -i -e "s|\[SSHD_GID\]|${SSHD_GID}|g"           $FI
+  sed -i -e "s|\[SSHD_PORT\]|${SSHD_PORT}|g"         $FI
+  sed -i -e "s|\[SSHD_HNAME\]|`hostname`|g"          $FI
+  sed -i -e "s|\[SSHD_DOMAIN\]|`hostname -d`|g"      $FI
+  chown -v  ${SSHD_USER}:${SSHD_GROUP} $FI
+  chmod  u+x $FI
+
 done
 
 exec /usr/sbin/sshd -D -e "$@"

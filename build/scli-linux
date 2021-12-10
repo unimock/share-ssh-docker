@@ -1,0 +1,29 @@
+#!/bin/bash
+
+_PORT=[SSHD_PORT]
+_USER=[SSHD_USER]
+_HOST=[SSHD_HNAME]@[SSHD_DOMAIN]
+
+if [[  `ssh-add -l` != *id_?sa* ]]; then  ssh-add ; fi 
+
+CMD="ssh"
+
+PARAMS=""
+for i in $* ; do
+
+  if [[ $i == ":"* ]] ; then
+    CMD="scp"
+    PARAMS="$PARAMS ${_USER}@${_HOST}${i}" 
+  else
+    PARAMS="$PARAMS $i"
+  fi
+done 
+
+if [ "$CMD" = "scp" ] ; then
+  scp -P ${_PORT} $PARAMS
+else
+  ssh -A -p ${_PORT} ${_USER}@${_HOST} $PARAMS
+fi
+exit $?
+
+
