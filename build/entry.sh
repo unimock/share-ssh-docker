@@ -13,14 +13,19 @@ if [ "${DOCKER_HOST}" != "" ] ; then
   echo "declare -x DOCKER_HOST=${DOCKER_HOST}" > /etc/profile.d/docker.sh
 fi
 
+
+mkdir -p /var/sshd/
 USERS=$( echo "${USERS//\"}" )
 for USER in $USERS ; do
-  SSHD_USER="$(echo "${USER}"  | cut -d ':' -f 1)"
-  SSHD_UID="$(echo "${USER}"   | cut -d ':' -f 2)"
-  SSHD_GROUP="$(echo "${USER}" | cut -d ':' -f 3)"
-  SSHD_GID="$(echo "${USER}"   | cut -d ':' -f 4)"
-  SSHD_PORT="$(echo "${USER}"  | cut -d ':' -f 5)"
-  SSHD_MAIL="$(echo "${USER}"  | cut -d ':' -f 6)"
+  _USER=$(echo "${USER}"  | cut -d ':' -f 1)
+  FI=/var/sshd/${_USER}.config
+  echo SSHD_USER=$(echo "${USER}"  | cut -d ':' -f 1) >> $FI
+  echo SSHD_UID=$(echo "${USER}"   | cut -d ':' -f 2) >> $FI
+  echo SSHD_GROUP=$(echo "${USER}" | cut -d ':' -f 3) >> $FI
+  echo SSHD_GID=$(echo "${USER}"   | cut -d ':' -f 4) >> $FI
+  echo SSHD_PORT=$(echo "${USER}"  | cut -d ':' -f 5) >> $FI
+  echo SSHD_MAIL=$(echo "${USER}"  | cut -d ':' -f 6) >> $FI
+  . $FI
   echo "user=${SSHD_USER} uid=${SSHD_UID} group=${SSHD_GROUP} gid=${SSHD_GID} port=${SSHD_PORT}"
   #
   # store ssh host keys persistent in .sshd directory
@@ -54,13 +59,6 @@ for USER in $USERS ; do
     echo "${SSHD_USER}:${PW}" | chpasswd &>/dev/null
     grep "^${SSHD_USER}:" /etc/shadow | cut -d: -f2 > $FI
     echo "$PW"                          > /home/${SSHD_USER}/.sshd/initial_ssh_password.txt
-  fi
-  #
-  # write email address in config file
-  # 
-  FI=/home/${SSHD_USER}/.sshd/.config_mail
-  if [ ! -f $FI ] ; then
-    echo ${SSHD_MAIL} > $FI
   fi
   #
   # create README.md
