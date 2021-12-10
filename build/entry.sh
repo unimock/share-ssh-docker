@@ -34,11 +34,9 @@ for USER in $USERS ; do
     cp -a /home/${SSHD_USER}/.sshd/ssh_host_*   /etc/ssh
   fi
   # Generate Host keys, if required
-  if ! ls /etc/ssh/ssh_host_* 1> /dev/null 2>&1; then
-      ssh-keygen -A
-      mkdir -p /home/${SSHD_USER}/.sshd/
-      cp -a /etc/ssh/ssh_host_rsa_key* /home/${SSHD_USER}/.sshd/
-  fi
+  ssh-keygen -A
+  mkdir -p /home/${SSHD_USER}/.sshd/
+  cp -a /etc/ssh/ssh_host_* /home/${SSHD_USER}/.sshd/
   # add 
   if getent group "${SSHD_GID}" &>/dev/null ; then
     echo "gid=${SSHD_GID} already exists!!!"
