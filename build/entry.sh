@@ -96,7 +96,7 @@ for USER in $USERS ; do
   #
   # prepare client script
   #
-  FI=/home/${SSHD_USER}/scli-linux
+  FI=/home/${SSHD_USER}/.sshd/scli-linux
   cp /scli-linux $FI
   sed -i -e "s|\[SSHD_USER\]|${SSHD_USER}|g"         $FI
   sed -i -e "s|\[SSHD_HOME\]|/home/${SSHD_USER}|g"   $FI

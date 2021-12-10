@@ -25,7 +25,7 @@ scp -P [SSHD_PORT] <file> [SSHD_USER]@[SSHD_HNAME].[SSHD_DOMAIN]:
 
 ## linux share client util
 
-In the home directory you will find a small script which enables easy access.
+In the *.sshd/* directory you will find a small script which enables easy access to your share workspace.
 Download the script to your linux client and save it as *scli* in a PATH directory.
 
 ```

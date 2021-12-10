@@ -1,4 +1,13 @@
 #!/bin/bash
+#
+# remote share client
+#
+
+VERSION="0.0.1"
+if [ "${1}" "-v" ] ; then
+  echo "$VERSION"
+  exit 0
+fi 
 
 _PORT=[SSHD_PORT]
 _USER=[SSHD_USER]
