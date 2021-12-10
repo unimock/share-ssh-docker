@@ -7,6 +7,7 @@ LABEL       maintainer="https://github.com/unimock"
 RUN         apk add --upgrade --no-cache \
                     shadow \
                     vim \
+                    vimdiff \
                     bash \
                     bash-completion \
                     rsync \
@@ -31,7 +32,7 @@ RUN sed -i "s#\/bin\/ash#/bin/bash#g" /etc/passwd
 
 RUN echo "Welcome to your sshd workspace!"                                                          > /etc/motd && \
     echo " "                                                                                       >> /etc/motd && \
-    echo "Available utils: git, tig, vim, micro, tree, curl, rsync, sendemail, openssl, gnupg, nc" >> /etc/motd && \
+    echo "Available utils: git, tig, vim, vimdiff, micro, tree, curl, rsync, sendemail, openssl, gnupg, nc" >> /etc/motd && \
     echo " "                                                                                       >> /etc/motd
 
 COPY ./desc.md /
