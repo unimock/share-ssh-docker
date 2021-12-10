@@ -1,4 +1,4 @@
-ARG         ALPINE_IMAGE="alpine:latest"
+ARG         ALPINE_IMAGE="alpine:edge"
 
 FROM        ${ALPINE_IMAGE}
 
@@ -21,18 +21,18 @@ RUN         apk add --upgrade --no-cache \
                     micro \
                     docker docker-compose \
                     netcat-openbsd \
-                    sudo
-#                    swaks \
+                    sudo 
+#                    swaks
 #            rm -rf /var/cache/apk/*
-RUN ln -sf /usr/bin/vim /usr/bin/vi
+RUN ln -sf /usr/bin/vim /usr/bin/vi ; ln -sf /usr/bin/nc /usr/bin/netcat
 
 RUN sed -i "s/#PermitRootLogin.*/PermitRootLogin no/" /etc/ssh/sshd_config
 RUN sed -i "s#\/bin\/ash#/bin/bash#g" /etc/passwd
 
-RUN echo "Welcome to your sshd workspace!"                                                     > /etc/motd && \
-    echo " "                                                                                  >> /etc/motd && \
-    echo "Available utils: git, tig, vim, micro, tree, curl, rsync, sendemail, openssl, gnupg, netcat"     >> /etc/motd && \
-    echo " "                                                                                  >> /etc/motd
+RUN echo "Welcome to your sshd workspace!"                                                          > /etc/motd && \
+    echo " "                                                                                       >> /etc/motd && \
+    echo "Available utils: git, tig, vim, micro, tree, curl, rsync, sendemail, openssl, gnupg, nc" >> /etc/motd && \
+    echo " "                                                                                       >> /etc/motd
 
 COPY ./desc.md /
 COPY ./scli-linux /
@@ -47,6 +47,7 @@ RUN         chmod a+x /entry.sh
 RUN         mv /usr/bin/passwd /usr/bin/passwd.orig
 COPY        passwd /usr/bin
 RUN         chmod a+x /usr/bin/passwd
+RUN         chmod u+s /bin/ping /usr/bin/traceroute
 
 EXPOSE      22
 VOLUME      ["/home"]
