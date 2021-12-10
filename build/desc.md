@@ -13,7 +13,7 @@ If you have any requests for the alpine docker container (utils, ..), let me kno
 
 With the initial setup of your container, a generic ssh password is generated.
 You can find the password in *./sshd/initial_ssh_password.txt*.
-The password can be changed with ```passwd```.
+The password can be changed with ```passwd``` or ```sudo passwd [SSHD_USER]```.
 To work in key mode, enter your pub key in *./.ssh/authorized_keys*.
 
 ## ssh-access:
@@ -23,13 +23,27 @@ ssh -p [SSHD_PORT] [SSHD_USER]@[SSHD_HNAME].[SSHD_DOMAIN]
 scp -P [SSHD_PORT] <file> [SSHD_USER]@[SSHD_HNAME].[SSHD_DOMAIN]:
 ```
 
-## Provide files via http:
+## linux share client util
+
+In the home directory you will find a small script which enables easy access.
+Download the script to your linux client and save it as *scli* in a PATH directory.
+
+```
+scli                   # login
+scli mkdir -p hugo     # execute a command
+scli /tmp/x :hugo      # copy from local to remote
+# or
+scli touch /tmp/test 
+scli :/tmp/test /tmp   # copy from remote to local
+```
+
+## provide files via http:
 
 Files can be provided for downloads either browsable or non-browsable.
 Files in the *./gist* directory are non-browsable, exclude
 files in the *./gist/browse* directory are browsable.
 
-### Examples
+### examples
 
 ```
 #
