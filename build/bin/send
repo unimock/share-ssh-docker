@@ -1,0 +1,41 @@
+#!/bin/bash
+
+. /var/server/environment
+
+if [ "$1" = "" ] ; then
+  echo "usage: `basename $0` -f <from> -t <to> -u <subject> -m <message> [ -a <attach-file> ]"
+  exit 1
+fi
+
+CURROPT=""
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -f)  FROM="$2"                 ; shift 2 ;;
+    -t)  TO="$2"                   ; shift 2 ;;
+    -m)  BODY="$2"                 ; shift 2 ;;
+    -u)  SUBJECT="$2"              ; shift 2 ;;
+    -a)  ATTACHMENT="$2"           ; shift 2 ;;
+    *)   CURROPT="$CURROPT \"$1\"" ; shift 1 ;;
+  esac
+done
+eval set -- $CURROPT
+
+if [ "$BODY" = "" ] ; then
+  BODY=$( cat -)
+fi
+
+
+# with attachment
+PARM_ATTACH=""
+if [ "$ATTACHMENT" != "" -a -f $ATTACHMENT ] ; then
+  _type=$(file --mime-type $ATTACHMENT | cut -d " " -f2)
+  PARAM_ATTACH=" --attach-type \"$_type\" --attach   @${ATTACHMENT} "
+fi
+
+swaks $SERVER_SWAKS_PARAM --from $FROM --to $TO \
+      --header "Subject: $SUBJECT" \
+      --attach-type "text/plain"  --attach-body "${BODY}" \
+      $PARAM_ATTACH
+
+exit 0
+

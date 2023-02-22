@@ -13,6 +13,9 @@ if [ "${DOCKER_HOST}" != "" ] ; then
   echo "declare -x DOCKER_HOST=${DOCKER_HOST}" > /etc/profile.d/docker.sh
 fi
 
+# store SWAKS_PARAM
+mkdir -p /var/server
+echo "SERVER_SWAKS_PARAM=\"${SWAKS_PARAM}\""  >>/var/server/environment
 
 mkdir -p /var/sshd/
 USERS=$( echo "${USERS//\"}" )
