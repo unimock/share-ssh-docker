@@ -3,6 +3,7 @@ FROM        ${ALPINE_IMAGE}
 LABEL       maintainer="https://github.com/unimock"
 RUN         apk add --upgrade --no-cache \
                     shadow \
+                    uuidgen \
                     vim \
                     vimdiff \
                     bash \
