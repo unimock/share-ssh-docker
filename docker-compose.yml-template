@@ -7,12 +7,16 @@ services:
     build:
       context: ./build
       dockerfile: Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
       args:
         ALPINE_IMAGE: alpine:edge
     ##################################################
     # RUN section
     ##################################################
-    image: unimock/share-sshd-docker:0.1.1
+    image: unimock/share-sshd-docker:1.0.0
     restart: unless-stopped
     container_name: sshd-hugo
     hostname: share
