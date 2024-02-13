@@ -25,9 +25,11 @@ services:
      - "111:22"
     environment:
       - TIMEZONE=Europe/Berlin
-      - USERS="hugo:1000:share:1000:111"
+      - USERS="hugo:1000:share:1000:111:hugo@domain\
+               karl:1001:share:1000:111:karl@domain"
     volumes:
      - ./hugo:/home/hugo
+     - ./karl:/home/karl
 volumes:  
   configure:
     driver: local
