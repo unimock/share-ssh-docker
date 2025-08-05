@@ -11,11 +11,11 @@ services:
           - linux/amd64
           - linux/arm64
       args:
-        ALPINE_IMAGE: alpine:3.21.3
+        ALPINE_IMAGE: alpine:3.22.1
     ##################################################
     # RUN section
     ##################################################
-    image: unimock/share-sshd-docker:1.1.0
+    image: unimock/share-sshd-docker:1.2.0
     restart: unless-stopped
     container_name: sshd-hugo
     hostname: share
